@@ -51,7 +51,7 @@ const upload = multer({
   }
 });
 
-// AI-analyysin ohjeistus __
+// AI-analyysin ohjeistus ___
 const getAnalysisPrompt = (pdfContent) => {
   return `
 Olet kiinteistö- ja kiinteistövälityksen kokennut ammattilainen.
