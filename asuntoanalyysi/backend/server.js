@@ -22,6 +22,9 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
+// Tarjoillaan frontend build-hakemistosta
+app.use(express.static(path.join(__dirname, '../frontend/dist')));
+
 // Google Gemini API konfiguraatio
 console.log('Gemini AI API konfiguroitu onnistuneesti');
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
@@ -231,6 +234,16 @@ app.post('/analyze', upload.single('pdfFile'), async (req, res) => {
     console.error('Virhe analyysin luomisessa:', error);
     res.status(500).json({ error: 'Analyysin luominen epäonnistui', details: error.message });
   }
+});
+
+// Reitti juuripolulle - tarjoillaan frontend
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
+});
+
+// Reitti kaikille muille poluille - ohjataan frontendiin
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
 });
 
 // Käynnistetään palvelin
