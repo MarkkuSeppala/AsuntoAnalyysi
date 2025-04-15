@@ -3,6 +3,8 @@ import axios from 'axios'
 import ReactMarkdown from 'react-markdown'
 import './App.css'
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+
 function App() {
   const [file, setFile] = useState(null)
   const [fileName, setFileName] = useState('')
@@ -36,7 +38,7 @@ function App() {
 
     // Tarkistetaan ensin onko backend-palvelin käynnissä
     try {
-      const testResponse = await axios.get('http://localhost:3001/test')
+      const testResponse = await axios.get(`${API_URL}/test`)
       console.log('Backend-palvelin vastasi:', testResponse.data)
       
       // Jos palvelin vastaa, lähetetään varsinainen analyysi-pyyntö
@@ -44,7 +46,7 @@ function App() {
       formData.append('pdfFile', file)
 
       try {
-        const response = await axios.post('http://localhost:3001/analyze', formData, {
+        const response = await axios.post(`${API_URL}/analyze`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
