@@ -12,7 +12,11 @@ const port = process.env.PORT || 3001;
 
 // CORS-asetusten tarkempi määrittely
 const corsOptions = {
-  origin: ['http://localhost:5173', 'http://localhost:5174'],
+  origin: [
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'https://asuntoanalyysi.onrender.com'
+  ],
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
   optionsSuccessStatus: 204
@@ -22,8 +26,12 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
-// Tarjoillaan frontend build-hakemistosta
-app.use(express.static(path.join(__dirname, '../frontend/dist')));
+// Tarjoillaan frontend build-hakemistosta jos se on olemassa
+const frontendPath = path.join(__dirname, '../frontend/dist');
+if (fs.existsSync(frontendPath)) {
+  console.log('Frontend build löytyi, tarjoillaan staattiset tiedostot');
+  app.use(express.static(frontendPath));
+}
 
 // Google Gemini API konfiguraatio
 console.log('Gemini AI API konfiguroitu onnistuneesti');
@@ -236,14 +244,32 @@ app.post('/analyze', upload.single('pdfFile'), async (req, res) => {
   }
 });
 
-// Reitti juuripolulle - tarjoillaan frontend
+// Reitti juuripolulle
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
+  const indexPath = path.join(__dirname, '../frontend/dist/index.html');
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    res.json({ 
+      status: 'ok', 
+      message: 'AsuntoAnalyysi API on käynnissä. Käytä /analyze endpointtia PDF-tiedostojen analysointiin.',
+      endpoints: {
+        '/': 'API info',
+        '/test': 'API testi',
+        '/analyze': 'PDF analyysi (POST)'
+      }
+    });
+  }
 });
 
-// Reitti kaikille muille poluille - ohjataan frontendiin
+// Reitti kaikille muille poluille
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
+  const indexPath = path.join(__dirname, '../frontend/dist/index.html');
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    res.status(404).json({ error: 'Polkua ei löydy' });
+  }
 });
 
 // Käynnistetään palvelin
