@@ -26,12 +26,8 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
-// Tarjoillaan frontend build-hakemistosta jos se on olemassa
-const frontendPath = path.join(__dirname, '../frontend/dist');
-if (fs.existsSync(frontendPath)) {
-  console.log('Frontend build löytyi, tarjoillaan staattiset tiedostot');
-  app.use(express.static(frontendPath));
-}
+// Tarjoillaan frontend public-hakemistosta
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Google Gemini API konfiguraatio
 console.log('Gemini AI API konfiguroitu onnistuneesti');
@@ -246,7 +242,7 @@ app.post('/analyze', upload.single('pdfFile'), async (req, res) => {
 
 // Reitti juuripolulle
 app.get('/', (req, res) => {
-  const indexPath = path.join(__dirname, '../frontend/dist/index.html');
+  const indexPath = path.join(__dirname, 'public/index.html');
   if (fs.existsSync(indexPath)) {
     res.sendFile(indexPath);
   } else {
@@ -264,7 +260,7 @@ app.get('/', (req, res) => {
 
 // Reitti kaikille muille poluille
 app.get('*', (req, res) => {
-  const indexPath = path.join(__dirname, '../frontend/dist/index.html');
+  const indexPath = path.join(__dirname, 'public/index.html');
   if (fs.existsSync(indexPath)) {
     res.sendFile(indexPath);
   } else {
