@@ -1,5 +1,5 @@
 # AsuntoAnalyysi
-
+ 
 Tekoälyavusteinen sovellus asuntojen myynti-ilmoitusten analysointiin.
 
 ## Kuvaus
