@@ -11,12 +11,47 @@ function App() {
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [analysis, setAnalysis] = useState('')
   const [error, setError] = useState('')
+  const [isDragging, setIsDragging] = useState(false)
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0]
     if (selectedFile && selectedFile.type === 'application/pdf') {
       setFile(selectedFile)
       setFileName(selectedFile.name)
+      setError('')
+    } else {
+      setFile(null)
+      setFileName('')
+      setError('Valitse PDF-tiedosto')
+    }
+  }
+
+  const handleDragEnter = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(true)
+  }
+
+  const handleDragLeave = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(false)
+  }
+
+  const handleDragOver = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+  }
+
+  const handleDrop = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(false)
+
+    const droppedFile = e.dataTransfer.files[0]
+    if (droppedFile && droppedFile.type === 'application/pdf') {
+      setFile(droppedFile)
+      setFileName(droppedFile.name)
       setError('')
     } else {
       setFile(null)
@@ -91,7 +126,13 @@ function App() {
                   <label className="form-label">
                     Valitse PDF-tiedosto
                   </label>
-                  <div className="file-upload">
+                  <div 
+                    className={`file-upload ${isDragging ? 'dragging' : ''}`}
+                    onDragEnter={handleDragEnter}
+                    onDragLeave={handleDragLeave}
+                    onDragOver={handleDragOver}
+                    onDrop={handleDrop}
+                  >
                     <label className="file-upload-label">
                       <div className="file-upload-content">
                         <svg className="upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
